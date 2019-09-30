@@ -11,17 +11,24 @@ import random
 #Criar a população de 20 individuos:
 class Particula:
     def __init__(self,X,Y):
-        self.x = x
+        self.x = X
         self.y = Y
-        #self.bestFitness =  
+        self.xVelocity = 0
+        self.yVelocity = 0
+        self.pbestFitness =  1000 ##iniciliza com um valor grande
+        self.pbest = [X,Y]
     
     def setFitness(self,fit):
         self.fitness = fit
     
     def mostra(self):
-        print("GeneX: %f, GeneY: %f, fitness:%f  " %(self.geneX, self.geneY, self.fitness))
+        print("GeneX: %f, GeneY: %f, fitness:%f  " %(self.x, self.x, self.fitness))
 
-
+    def atualizaBestFitness(self):
+        #caso for pontode maximo <(menor) passa a ser >(maior) 
+        if self.fitness < self.pbestFitness:
+            self.pbestFitness = self.fitness
+            self.pbest =[self.x,self.y] 
 
 
 
@@ -33,13 +40,20 @@ class Particula:
 N = 20
 W = 0.5
 c1 = 0.8
-c2 = 0.9 
+c2 = 0.9
+#global populacao
+#global gbest
+#global gbestFitness 
+
+populacao = []
+gbest = [1000,1000]
+gbestFitness = 1000.0 
 
 #####################################
 #         funcCircunferencia        #
 #####################################
 def funcCircunferencia(values):
-    return values.geneX**2 + values.geneY**2
+    return values.x**2 + values.y**2
 
 
 
@@ -63,65 +77,22 @@ def genPopulacao():
 
 
 #####################################
-#         genPopulacao              #
+#          calcFitness              #
 #####################################
 
 def calcFitness():
-    fitness = 0 
+    global gbestFitness 
+    global gbest
     print("#######   fitness  ######")
     for i in range(N):
         populacao[i].fitness = funcCircunferencia(populacao[i])
+        populacao[i].atualizaBestFitness()
+        if (populacao[i].fitness < gbestFitness):
+            gbestFitness = populacao[i].fitness
+            gbest = [populacao[i].x,populacao[i].y] 
         print(populacao[i].fitness)
-    return fitness
-
-#####################################
-#             crossOver             #
-#####################################
-def crossOver(selecionados):
-    #cross over em x de 1 e 2
-    temp = selecionados[0].geneX 
-    selecionados[0].geneX  = selecionados[1].geneX
-    selecionados[1].geneX = temp
-    #cross over em Y de 3 e 4
-    temp = selecionados[2].geneY 
-    selecionados[2].geneY  = selecionados[3].geneY
-    selecionados[3].geneY = temp
-    #cross over em Y de 5 e 6
-    temp = selecionados[4].geneX 
-    selecionados[4].geneX  = selecionados[5].geneX
-    selecionados[5].geneX = temp
-
-#####################################
-#             mutation             #
-#####################################
-def mutation(selecionados):
-    #verificar
-    for i in range(0,len(selecionados)):
-        if(selecionados[i].geneX >0):
-            selecionados[i].geneX = selecionados[i].geneX - PMULT
-        else:
-            selecionados[i].geneX = selecionados[i].geneX + PMULT
-        if(selecionados[i].geneY >0):
-            selecionados[i].geneY = selecionados[i].geneY - PMULT
-        else:
-            selecionados[i].geneY = selecionados[i].geneY + PMULT
-
-
     
-#####################################
-#       TournmentSelection          #
-#####################################
-def TournmentSelection():
-    selecionados = []
-    for i in range(M):
-        sorteados= []
-        for i in range(4):
-            selecionado = random.randint(0,N-1)
-            sorteados.append(populacao[selecionado])
-        
-        sorteados.sort(key=lambda x: x.fitness)
-        selecionados.append(sorteados[0])
-    return selecionados
+
 
 #####################################
 #           novaGeração             #
@@ -139,7 +110,7 @@ def novaGeração():
     for i in range(M):populacao.pop(),populacao.append(selecionados[i])
 
 #####################################
-#           novaGeração             #
+#       verificaPopulacao           #
 #####################################
 
 def verificaPopulacao():
@@ -148,7 +119,33 @@ def verificaPopulacao():
             return True,i
     return False,0 
 
-    
+#####################################
+#          calcVelocidade           #
+#####################################
+
+def calcVelocidade(gbest):
+    for i in range(N):
+        r1 = round(random.uniform(0.0,1.0),2)
+        r2 = round(random.uniform(0.0,1.0),2)
+        oldVx = populacao[i].xVelocity
+        oldVy = populacao[i].yVelocity
+        posx = populacao[i].x
+        posy = populacao[i].y
+        pbestX = populacao[i].pbest[0]
+        pbestY = populacao[i].pbest[1]
+        populacao[i].xVelocity= W*oldVx + c1*r1*(pbestX-posx) + c2*r2*(gbest[0]-posx)  
+        populacao[i].yVelocity= W*oldVy + c1*r1*(pbestY-posy) + c2*r2*(gbest[1]-posy)  
+     
+#####################################
+#              attPos               #
+#####################################
+
+def attPos():
+    for i in range(N):
+       populacao[i].x = populacao[i].x + populacao[i].xVelocity
+       populacao[i].y = populacao[i].y + populacao[i].yVelocity
+     
+
 
 
 
@@ -159,21 +156,29 @@ def main():
     #inicaliza geração
     genPopulacao()
     #calcula a  fitness da função
-    fitness = calcFitness()
+    #calcFitness()
     #encontra nova Geração:
     while(True):
-        novaGeração() #<--- fez a o crossover e multação aqui
-        calcFitness()
         #verifica se encontrou objetivo
+        calcFitness()  #calcula o fitness globall e o de cada particula
         state,i =verificaPopulacao()
         if(state):
             print("************** ENCONTRADO ****************")
             populacao[i].mostra()
             return 0
 
+        #calcula velocidade das Particulas
+        calcVelocidade(gbest)
+
+        #atualiza posição das particulas de acordo com a velocidade
+        attPos()
+
+
+        
+
         print("Pass")
         for i in range(N):
-            print("GeneX: %f, GeneY: %f, fitness:%f  " %(populacao[i].geneX, populacao[i].geneY, populacao[i].fitness))
+            print("GeneX: %f, GeneY: %f, fitness:%f  " %(populacao[i].x, populacao[i].y, populacao[i].fitness))
 
 
 

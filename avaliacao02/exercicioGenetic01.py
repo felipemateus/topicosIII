@@ -24,9 +24,6 @@ class Cromossomo:
 
 
 
-
-
-
 #####################################
 #         Parametros do GA          #
 #####################################
@@ -64,7 +61,7 @@ def genPopulacao():
 
 
 #####################################
-#         genPopulacao              #
+#          calcFitness              #
 #####################################
 
 def calcFitness():
@@ -140,7 +137,7 @@ def novaGeração():
     for i in range(M):populacao.pop(),populacao.append(selecionados[i])
 
 #####################################
-#           novaGeração             #
+#       verificaPopulacao           #
 #####################################
 
 def verificaPopulacao():
