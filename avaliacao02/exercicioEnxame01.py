@@ -173,9 +173,6 @@ def main():
         #atualiza posição das particulas de acordo com a velocidade
         attPos()
 
-
-        
-
         print("Pass")
         for i in range(N):
             print("GeneX: %f, GeneY: %f, fitness:%f  " %(populacao[i].x, populacao[i].y, populacao[i].fitness))

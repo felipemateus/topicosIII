@@ -1,5 +1,12 @@
 import random
-
+import time
+import matplotlib
+import numpy as np
+import random
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+import threading    
 
 #Algoritmo Genético com população de 20 indivíduos.
 #Trace gráficos dos valores mínimos e médios da função de aptidão para cada iteração. Realize 10 diferentes
@@ -31,7 +38,17 @@ N = 20
 M = 6 #Selecionados(Pais)
 populacao = []
 PREC = 0.5 #taxa de recombinação
-PMULT = 0.1 # taxa de mutação
+PMULT = 0.001 # taxa de mutação
+#####################################
+#     Parametros do Animacao        #
+#####################################
+delta = 0.025
+x = np.arange(-10.0, 10.0, delta)
+y = np.arange(-10.0, 10.0, delta)
+X, Y = np.meshgrid(x, y)
+Z =X**2 + Y**2
+fig, ax = plt.subplots()
+
 
 #####################################
 #         funcCircunferencia        #
@@ -45,8 +62,8 @@ def funcCircunferencia(values):
 #         randonValues              #
 #####################################
 def randonValues():
-    x = round(random.uniform(0.0,10.0),2)
-    y = round(random.uniform(0.0,10.0),2)
+    x = round(random.uniform(-50.0,50.0),2)
+    y = round(random.uniform(-50.0,50.0),2)
     return x,y
 
 
@@ -94,15 +111,15 @@ def crossOver(selecionados):
 #####################################
 def mutation(selecionados):
     #verificar
-    for i in range(0,len(selecionados)):
+     for i in range(0,len(selecionados)):
         if(selecionados[i].geneX >0):
-            selecionados[i].geneX = selecionados[i].geneX - PMULT
+            selecionados[i].geneX = selecionados[i].geneX - random.randint(1,9) * PMULT 
         else:
-            selecionados[i].geneX = selecionados[i].geneX + PMULT
+            selecionados[i].geneX = selecionados[i].geneX + random.randint(1,9) * PMULT
         if(selecionados[i].geneY >0):
-            selecionados[i].geneY = selecionados[i].geneY - PMULT
+            selecionados[i].geneY = selecionados[i].geneY - random.randint(1,9) * PMULT
         else:
-            selecionados[i].geneY = selecionados[i].geneY + PMULT
+            selecionados[i].geneY = selecionados[i].geneY + random.randint(1,9) * PMULT 
 
 
     
@@ -146,8 +163,51 @@ def verificaPopulacao():
             return True,i
     return False,0 
 
-    
+#####################################
+#       mostragrafico           #
+#####################################
 
+def mostragrafico():
+    delta = 0.025
+    x = np.arange(-10.0, 10.0, delta)
+    y = np.arange(-10.0, 10.0, delta)
+    X, Y = np.meshgrid(x, y)
+    Z =X**2 + Y**2
+
+    a = []
+    b = []
+    for i in range(20):
+        a.append(populacao[i].geneX)
+        b.append(populacao[i].geneY)
+
+    CS = ax.contour(X,Y,Z,levels=[0.10, 1 , 5 ,20, 50])
+    ax.clabel(CS,inline=1,fontsize=10)
+    ax.set_title('AG')
+    print(a,b)
+    ax.scatter(a,b)
+    plt.show()
+
+
+
+def animate(i):
+    a = []
+    b = []
+    for i in range(20):
+        a.append(populacao[i].geneX)
+        b.append(populacao[i].geneY)
+    print("Passei aqui")
+    ax.clear()
+    CS = ax.contour(X,Y,Z,levels=[0.10, 1 , 5 ,20, 50])
+    ax.clabel(CS,inline=1,fontsize=10)
+    ax.set_title('Simplest default with labels')
+    print("---  A  ----")
+    print(a)
+    print("---  B  ----")
+    print(b)
+    ax.scatter(a,b)
+
+#ani = FuncAnimation(fig, animate, np.arange(1, 200), interval=10, blit=True)
+#plt.show()
 
 
 #####################################
@@ -169,6 +229,9 @@ def main():
             populacao[i].mostra()
             return 0
 
+        #mostragrafico()
+        time.sleep(1)
+
         print("Pass")
         for i in range(N):
             print("GeneX: %f, GeneY: %f, fitness:%f  " %(populacao[i].geneX, populacao[i].geneY, populacao[i].fitness))
@@ -179,4 +242,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    threading.Thread(target=main).start()
+    interval = 2#in seconds     
+    ani = FuncAnimation(fig,animate,2000,interval=interval*1e+3,blit=False)
+    plt.show()
+
+    #main()
