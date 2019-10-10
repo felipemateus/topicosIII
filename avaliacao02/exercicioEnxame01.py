@@ -1,5 +1,12 @@
 import random
-
+import time
+import matplotlib
+import numpy as np
+import random
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+import threading    
 #Para as funções listadas abaixo, realizar a otimização utilizando um Otimização por Enxame de Partículas com
 #população de 20 indivíduos. Trace gráficos dos valores mínimos e médios da função de aptidão para cada iteração.
 #Realize 10 diferentes inicializações com alterações nos parâmetros do algoritmo, reinicie o treinamento e comente os
@@ -48,6 +55,16 @@ c2 = 0.9
 populacao = []
 gbest = [1000,1000]
 gbestFitness = 1000.0 
+#####################################
+#     Parametros do Animacao        #
+#####################################
+delta = 0.025
+x = np.arange(-10.0, 10.0, delta)
+y = np.arange(-10.0, 10.0, delta)
+X, Y = np.meshgrid(x, y)
+Z =X**2 + Y**2
+fig, ax = plt.subplots()
+
 
 #####################################
 #         funcCircunferencia        #
@@ -146,7 +163,22 @@ def attPos():
        populacao[i].y = populacao[i].y + populacao[i].yVelocity
      
 
-
+def animate(i):
+    a = []
+    b = []
+    for i in range(20):
+        a.append(populacao[i].x)
+        b.append(populacao[i].y)
+    print("Passei aqui")
+    ax.clear()
+    CS = ax.contour(X,Y,Z,levels=[0.10, 1 , 5 ,20, 50])
+    ax.clabel(CS,inline=1,fontsize=10)
+    ax.set_title('Simplest default with labels')
+    print("---  A  ----")
+    print(a)
+    print("---  B  ----")
+    print(b)
+    ax.scatter(a,b)
 
 
 #####################################
@@ -172,7 +204,7 @@ def main():
 
         #atualiza posição das particulas de acordo com a velocidade
         attPos()
-
+        time.sleep(2)
         print("Pass")
         for i in range(N):
             print("GeneX: %f, GeneY: %f, fitness:%f  " %(populacao[i].x, populacao[i].y, populacao[i].fitness))
@@ -183,4 +215,8 @@ def main():
 
 
 if __name__ == "__main__":
+    threading.Thread(target=main).start()
+    interval = 2#in seconds     
+    ani = FuncAnimation(fig,animate,2000,interval=interval*1e+3,blit=False)
+    plt.show()
     main()
