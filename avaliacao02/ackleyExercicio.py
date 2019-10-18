@@ -16,8 +16,8 @@ def calcAckley2d(x,y):
 def derivadaAckley2d(x,y):
     primeiroArg = (2.828*x/(math.sqrt(x**2+y**2)))
     segundoArg = math.exp(-0.2* math.sqrt(0.5*(x**2+y**2)))
-    terceiroArgumento = math.pi * math.exp(0.5*math.cos(2*math.pi*x) + math.cos(2*math.pi*y)) * math.sin(2*math.pi*x)
-    result = primeiroArg * segundoArg + terceiroArgumento
+    terceiroArg = math.pi * math.exp(0.5*math.cos(2*math.pi*x) + math.cos(2*math.pi*y)) * math.sin(2*math.pi*x)
+    result = primeiroArg * segundoArg + terceiroArg
     return result
 
 # derivada de df/dx, para calcular
