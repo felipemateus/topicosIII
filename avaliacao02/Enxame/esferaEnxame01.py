@@ -58,7 +58,7 @@ populacao = []
 gbest = [1000,1000]
 gbestFitness = 1000.0 
 #####################################
-#     Parametros do Animacao        #
+#     Parametros da Animacao        #
 #####################################
 delta = 0.025
 x = np.arange(-10.0, 10.0, delta)
