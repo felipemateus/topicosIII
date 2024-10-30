@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import threading    
 #####################################
-#     Parametros do Animacao        #
+#     Parametros da Animacao        #
 #####################################
 delta = 1
 x = np.arange(-50.0, 50.0, delta)
