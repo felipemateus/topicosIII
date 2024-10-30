@@ -12,7 +12,7 @@ import threading
 import math
 
 #####################################
-#     Parametros do Animacao        #
+#     Parametros da Animacao        #
 #####################################
 def calcAckley2d(x,y):
     primeiraSoma = -0.2*math.sqrt(0.5*(x**2 + y**2))
