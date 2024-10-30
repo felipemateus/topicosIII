@@ -47,7 +47,7 @@ populacao = []
 PREC = 0.5 #taxa de recombinação
 PMULT = 0.001 # taxa de mutação
 #####################################
-#     Parametros do Animacao        #
+#     Parametros da Animacao        #
 #####################################
 delta = 0.2
 x = np.arange(-10.0, 10.0, delta)
